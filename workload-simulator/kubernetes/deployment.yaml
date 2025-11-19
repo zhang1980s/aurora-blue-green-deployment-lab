@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workload-simulator
+  namespace: default
+  labels:
+    app: workload-simulator
+    version: v1.0.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: workload-simulator
+  template:
+    metadata:
+      labels:
+        app: workload-simulator
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: workload-simulator
+      containers:
+      - name: workload-simulator
+        image: workload-simulator:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: metrics
+          containerPort: 8080
+          protocol: TCP
+        env:
+        - name: AURORA_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: workload-simulator-secret
+              key: AURORA_ENDPOINT
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: workload-simulator-secret
+              key: DB_PASSWORD
+        - name: DATABASE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: workload-simulator-config
+              key: DATABASE_NAME
+        - name: USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: workload-simulator-config
+              key: USERNAME
+        - name: WRITE_WORKERS
+          valueFrom:
+            configMapKeyRef:
+              name: workload-simulator-config
+              key: WRITE_WORKERS
+        - name: WRITE_RATE
+          valueFrom:
+            configMapKeyRef:
+              name: workload-simulator-config
+              key: WRITE_RATE
+        - name: CONNECTION_POOL_SIZE
+          valueFrom:
+            configMapKeyRef:
+              name: workload-simulator-config
+              key: CONNECTION_POOL_SIZE
+        - name: LOG_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: workload-simulator-config
+              key: LOG_INTERVAL
+        - name: ENABLE_METRICS
+          valueFrom:
+            configMapKeyRef:
+              name: workload-simulator-config
+              key: ENABLE_METRICS
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: workload-simulator
+  namespace: default
+  labels:
+    app: workload-simulator
+  annotations:
+    # Optional: IRSA for accessing AWS Secrets Manager
+    # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/workload-simulator-role

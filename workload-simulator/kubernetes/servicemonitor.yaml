@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: workload-simulator
+  namespace: default
+  labels:
+    app: workload-simulator
+    prometheus: kube-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: workload-simulator
+  endpoints:
+  - port: metrics
+    interval: 5s
+    path: /metrics
+    scrapeTimeout: 4s
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_name]
+      targetLabel: pod
+    - sourceLabels: [__meta_kubernetes_namespace]
+      targetLabel: namespace
+    - sourceLabels: [__meta_kubernetes_service_name]
+      targetLabel: service

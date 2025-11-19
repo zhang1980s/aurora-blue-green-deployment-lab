@@ -1,0 +1,32 @@
+name: aurora-bluegreen-aurora
+runtime: go
+description: Aurora MySQL cluster for Blue-Green deployment lab
+
+config:
+  vpcStackName:
+    type: string
+    description: Name of the VPC stack to reference (e.g., organization/aurora-bluegreen-vpc/dev)
+  projectName:
+    type: string
+    default: "aurora-bluegreen-lab"
+    description: Project name used for resource naming
+  databaseName:
+    type: string
+    default: "lab_db"
+    description: Name of the initial database to create
+  masterUsername:
+    type: string
+    default: "admin"
+    description: Master username for the Aurora cluster
+  masterPassword:
+    type: string
+    secret: true
+    description: Master password for the Aurora cluster (minimum 8 characters)
+  engineVersion:
+    type: string
+    default: "8.0.mysql_aurora.3.04.0"
+    description: Aurora MySQL engine version (start with 3.04 for upgrade testing)
+  instanceClass:
+    type: string
+    default: "db.r6g.xlarge"
+    description: Instance class for Aurora instances

@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: default
+
+commonLabels:
+  project: aurora-blue-green-lab
+  component: workload-simulator
+
+resources:
+  - configmap.yaml
+  - secret.yaml
+  - deployment.yaml
+  - service.yaml
+  - servicemonitor.yaml
+  - hpa.yaml
+
+images:
+  - name: workload-simulator
+    newName: workload-simulator
+    newTag: latest
+
+# ConfigMap generator for dynamic configuration
+configMapGenerator:
+  - name: workload-simulator-config
+    behavior: merge
+    literals:
+      - DATABASE_NAME=lab_db
+      - USERNAME=admin
+      - WRITE_WORKERS=10
+      - WRITE_RATE=100
+      - CONNECTION_POOL_SIZE=100
+      - LOG_INTERVAL=10
+      - ENABLE_METRICS=true

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <!-- Console: INFO level for clean summary output (configurable via LOG_LEVEL) -->
+        <Property name="console.level">${env:LOG_LEVEL:-INFO}</Property>
+        <!-- File: DEBUG level for detailed audit trail (always captures everything) -->
+        <Property name="file.level">DEBUG</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- Console appender - Summary output only (INFO level by default) -->
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="%msg%n"/>
+            <ThresholdFilter level="${console.level}" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+
+        <!-- Rolling file appender - Complete detailed audit (DEBUG level always) -->
+        <RollingFile name="FILE" fileName="workload-simulator.log"
+                     filePattern="workload-simulator-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="7">
+                <Delete basePath="." maxDepth="1">
+                    <IfFileName glob="workload-simulator-*.log"/>
+                    <IfLastModified age="7d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <ThresholdFilter level="${file.level}" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- Reduce noise from connection pool -->
+        <Logger name="com.zaxxer.hikari" level="WARN" additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="FILE"/>
+        </Logger>
+
+        <!-- AWS JDBC Wrapper - Routes through JUL-to-SLF4J bridge -->
+        <!-- TRACE (FINEST in JUL) details go to file only, warnings/errors to console -->
+        <Logger name="software.amazon.jdbc" level="TRACE" additivity="false">
+            <AppenderRef ref="CONSOLE" level="WARN"/>
+            <AppenderRef ref="FILE"/>
+        </Logger>
+
+        <!-- JUL bridge logger - prevent infinite recursion -->
+        <Logger name="org.slf4j.bridge" level="WARN" additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="FILE"/>
+        </Logger>
+
+        <!-- Root logger - DEBUG to capture everything -->
+        <Root level="DEBUG">
+            <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="FILE"/>
+        </Root>
+    </Loggers>
+</Configuration>

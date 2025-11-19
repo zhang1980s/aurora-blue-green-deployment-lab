@@ -1,0 +1,69 @@
+# Log files
+*.log
+
+# Pulumi state files (exclude actual stack configs, keep examples)
+Pulumi.*.yaml
+!Pulumi.*.example.yaml
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+target/
+bin/
+build/
+dist/
+*.jar
+*.class
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Kubernetes secrets (exclude examples)
+kubernetes/secret.yaml
+!kubernetes/secret.yaml.example
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+
+# AWS credentials (should never be in repo)
+.aws/
+credentials
+config
+
+# Terraform/Pulumi backends
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup

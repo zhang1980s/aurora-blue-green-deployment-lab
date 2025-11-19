@@ -1,0 +1,22 @@
+name: aurora-bluegreen-ec2
+runtime: go
+description: EC2 instance for Aurora Blue-Green deployment lab workload simulator
+
+config:
+  vpcStackName:
+    type: string
+    description: Name of the VPC stack to reference (e.g., organization/aurora-bluegreen-vpc/dev)
+  auroraStackName:
+    type: string
+    description: (Optional) Name of the Aurora stack to reference for convenience outputs
+  projectName:
+    type: string
+    default: "aurora-bluegreen-lab"
+    description: Project name used for resource naming
+  keyName:
+    type: string
+    description: EC2 key pair name for SSH access (required)
+  instanceType:
+    type: string
+    default: "t3.xlarge"
+    description: EC2 instance type for the workload simulator

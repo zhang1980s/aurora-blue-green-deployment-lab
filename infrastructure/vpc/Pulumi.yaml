@@ -1,0 +1,13 @@
+name: aurora-bluegreen-vpc
+runtime: go
+description: VPC and network infrastructure for Aurora Blue-Green deployment lab
+
+config:
+  vpcCidr:
+    type: string
+    default: "10.0.0.0/16"
+    description: CIDR block for the VPC
+  projectName:
+    type: string
+    default: "aurora-bluegreen-lab"
+    description: Project name used for resource naming

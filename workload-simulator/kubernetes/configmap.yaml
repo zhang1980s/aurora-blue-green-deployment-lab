@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: workload-simulator-config
+  namespace: default
+  labels:
+    app: workload-simulator
+data:
+  DATABASE_NAME: "lab_db"
+  USERNAME: "admin"
+  WRITE_WORKERS: "10"
+  WRITE_RATE: "100"
+  CONNECTION_POOL_SIZE: "100"
+  LOG_INTERVAL: "10"
+  ENABLE_METRICS: "true"
